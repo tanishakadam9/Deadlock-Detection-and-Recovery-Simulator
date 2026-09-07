@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deadlock Detection and Recovery Simulator using Resource Allocation Graphs. Visualize processes, resources, allocations, and detect deadlocks.">
+    <title>Resource Allocation Graph - Deadlock Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <div class="nav-title-group">
+            <div class="nav-title">Resource Allocation Graph</div>
+            <div class="nav-subtitle">Deadlock Detection & Recovery System</div>
+        </div>
+    </nav>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-pill">
+            <div class="stat-dot"></div>
+            <span class="stat-label">Processes</span>
+            <span class="stat-value" id="stat-processes">0</span>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-dot"></div>
+            <span class="stat-label">Resources</span>
+            <span class="stat-value" id="stat-resources">0</span>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-dot"></div>
+            <span class="stat-label">Allocations</span>
+            <span class="stat-value" id="stat-allocations">0</span>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-dot"></div>
+            <span class="stat-label">Requests</span>
+            <span class="stat-value" id="stat-requests">0</span>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <main class="content-area">
+        
+        <!-- Top Row (Forms) -->
+        <div class="cards-row">
+            <!-- Create Process -->
+            <div class="card">
+                <div class="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Create Process
+                </div>
+                <div class="card-body">
+                    <form id="form-add-process">
+                        <div class="form-group">
+                            <label for="process-name">Process Name</label>
+                            <input type="text" id="process-name" class="form-control" required placeholder="e.g., P1">
+                        </div>
+                        <div class="form-group">
+                            <label for="process-priority">Priority</label>
+                            <select id="process-priority" class="form-control">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Process</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Create Resource -->
+            <div class="card">
+                <div class="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Create Resource
+                </div>
+                <div class="card-body">
+                    <form id="form-add-resource">
+                        <div class="form-group">
+                            <label for="resource-name">Resource Name</label>
+                            <input type="text" id="resource-name" class="form-control" required placeholder="e.g., R1">
+                        </div>
+                        <div class="form-group">
+                            <label for="resource-instances">Instances</label>
+                            <input type="number" id="resource-instances" class="form-control" min="1" max="99" required value="1">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Resource</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Elements Section -->
+        <div>
+            <div class="section-title">Active Elements</div>
+            <div class="cards-row">
+                <!-- Processes Table -->
+                <div class="card table-container">
+                    <div class="card-header">Processes</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processes-tbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Resources Table -->
+                <div class="card table-container">
+                    <div class="card-header">Resources</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Instances</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resources-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relationships Section -->
+        <div>
+            <div class="section-title">Resource Relationships</div>
+            
+            <div class="tabs">
+                <button class="tab active" id="tab-btn-allocations" onclick="switchTab('allocations')">Allocations</button>
+                <button class="tab" id="tab-btn-requests" onclick="switchTab('requests')">Requests</button>
+            </div>
+
+            <!-- Allocations Panel -->
+            <div class="tab-panel active" id="panel-allocations">
+                <div class="cards-row">
+                    <div class="card">
+                        <div class="card-header">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            Add Allocation
+                        </div>
+                        <div class="card-body">
+                            <form id="form-add-allocation">
+                                <div class="form-group">
+                                    <label for="alloc-process">Process</label>
+                                    <select id="alloc-process" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="alloc-resource">Resource</label>
+                                    <select id="alloc-resource" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="alloc-amount">Amount</label>
+                                    <input type="number" id="alloc-amount" class="form-control" min="1" required value="1">
+                                </div>
+                                <button type="submit" class="btn-primary">Add Allocation</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Process</th>
+                                    <th>Resource</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allocations-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requests Panel -->
+            <div class="tab-panel" id="panel-requests">
+                <div class="cards-row">
+                    <div class="card">
+                        <div class="card-header">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+                            Add Request
+                        </div>
+                        <div class="card-body">
+                            <form id="form-add-request">
+                                <div class="form-group">
+                                    <label for="req-process">Process</label>
+                                    <select id="req-process" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="req-resource">Resource</label>
+                                    <select id="req-resource" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="req-amount">Amount</label>
+                                    <input type="number" id="req-amount" class="form-control" min="1" required value="1">
+                                </div>
+                                <button type="submit" class="btn-primary">Add Request</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Process</th>
+                                    <th>Resource</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requests-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Toasts -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="static/js/main.js"></script>
+</body>
+</html>
