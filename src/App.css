@@ -1,0 +1,120 @@
+/* App-specific animation overrides and component styles */
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-logo svg {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 0 8px rgba(0, 136, 255, 0.5));
+}
+
+.navbar-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0088ff, #00c6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar-subtitle {
+  font-size: 0.75rem;
+  color: #7a8299;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.card-icon {
+  width: 28px;
+  height: 28px;
+  color: #0088ff;
+  filter: drop-shadow(0 0 6px rgba(0, 136, 255, 0.4));
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #e8eaf0;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priority-low { color: #4ecdc4; }
+.priority-medium { color: #ffd166; }
+.priority-high { color: #ff8c42; }
+.priority-critical { color: #ff4757; }
+
+.instances-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  background: rgba(0, 136, 255, 0.15);
+  border: 1px solid rgba(0, 136, 255, 0.3);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #00aaff;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  color: #2a3050;
+  margin-bottom: 12px;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0, 136, 255, 0.08);
+  border: 1px solid rgba(0, 136, 255, 0.2);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #8899bb;
+  transition: all 0.3s ease;
+}
+
+.stat-pill:hover {
+  background: rgba(0, 136, 255, 0.15);
+  border-color: rgba(0, 136, 255, 0.4);
+}
+
+.stat-value {
+  font-weight: 700;
+  color: #00aaff;
+  font-size: 0.9rem;
+}
+
+.stat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0088ff;
+  box-shadow: 0 0 6px rgba(0, 136, 255, 0.6);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
