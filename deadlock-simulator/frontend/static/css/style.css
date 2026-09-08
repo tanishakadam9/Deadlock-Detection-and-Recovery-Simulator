@@ -75,6 +75,7 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
   background: linear-gradient(90deg, var(--primary), var(--secondary));
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -459,3 +460,241 @@ tr:hover td {
     gap: 1rem;
   }
 }
+
+/* ============================================================
+   Graph Navigation Button (index.html)
+   ============================================================ */
+.graph-nav-wrapper {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-graph-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #0066ff, #00aaff);
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 136, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 136, 255, 0.25);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.btn-graph-nav:hover {
+  box-shadow: 0 6px 30px rgba(0, 136, 255, 0.55);
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.btn-graph-nav:active {
+  transform: scale(0.98);
+}
+
+.btn-graph-nav .arrow-down {
+  animation: bounce-down 1.6s ease-in-out infinite;
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(4px); }
+}
+
+/* ============================================================
+   Graph Page  (graph.html)
+   ============================================================ */
+.graph-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-main);
+}
+
+/* breadcrumb / back bar */
+.graph-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 2rem;
+  background: rgba(12, 15, 28, 0.6);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.graph-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.graph-breadcrumb a:hover { color: var(--secondary); }
+
+.graph-breadcrumb .sep {
+  opacity: 0.4;
+}
+
+.graph-breadcrumb .current {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* main content area */
+.graph-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.graph-panels {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 560px;
+}
+
+.graph-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.graph-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.graph-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.graph-panel-title svg {
+  color: var(--primary);
+}
+
+/* cycle warning badge */
+.cycle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  background: rgba(255, 51, 102, 0.15);
+  border: 1px solid rgba(255, 51, 102, 0.35);
+  border-radius: 20px;
+  color: #ff4d6d;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,51,102,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(255,51,102,0); }
+}
+
+.cycle-badge.hidden { display: none; }
+
+/* Cytoscape container */
+.cy-container {
+  flex: 1;
+  position: relative;
+  background: rgba(7, 8, 15, 0.5);
+}
+
+/* legend strip */
+.graph-legend {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.6rem 1.25rem;
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+}
+
+.legend-dot.process    { background: rgba(0,136,255,0.25); border-color: #0088ff; }
+.legend-dot.resource   { background: rgba(0,198,255,0.2);  border-color: #00c6ff; border-radius: 2px; }
+.legend-dot.cycle-node { background: rgba(255,51,102,0.3); border-color: #ff3366; }
+
+.legend-line {
+  width: 24px;
+  height: 2px;
+  border-radius: 1px;
+}
+.legend-line.solid  { background: #0088ff; }
+.legend-line.dashed { background: repeating-linear-gradient(90deg,#00c6ff 0 4px,transparent 4px 8px); }
+.legend-line.cycle  { background: #ff3366; }
+
+/* empty / loading state in panel */
+.graph-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.graph-empty svg { opacity: 0.3; }
+.graph-empty p   { font-size: 0.9rem; }
+
+@media (max-width: 900px) {
+  .graph-panels { flex-direction: column; min-height: auto; }
+  .graph-panel  { min-height: 400px; }
+  .graph-breadcrumb { padding: 0.75rem 1rem; }
+  .graph-content    { padding: 1rem; }
+}
+
