@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
 </head>
 <body>
 
@@ -236,11 +237,114 @@
             </div>
             
         </div>
+
+        <!-- Graph Visualization Button -->
+        <div class="graph-nav-wrapper">
+            <a href="rag.html" class="btn-graph-nav">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Resource Allocation Graph &rarr;
+            </a>
+        </div>
+
+        <!-- Graph Visualization Section -->
+        <div id="graph-section" class="graph-section">
+            <div class="section-title">Deadlock Detection &amp; Graph Visualization</div>
+
+            <!-- Detect Deadlock Panel -->
+            <div class="card deadlock-panel" id="deadlock-panel">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span>Detect Deadlock</span>
+                    </div>
+                    <button type="button" class="btn-primary" id="btn-detect-deadlock" style="width: auto; padding: 0.5rem 1.25rem; margin: 0; font-size: 0.85rem;">
+                        Run Detection
+                    </button>
+                </div>
+                <div class="card-body" id="deadlock-result-body">
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Click "Run Detection" or add processes/resources to analyze deadlock status.
+                    </div>
+                </div>
+            </div>
+
+            <div class="graph-panels">
+
+                <!-- Left: RAG Panel -->
+                <div class="graph-panel" id="rag-panel">
+                    <div class="graph-panel-header">
+                        <div class="graph-panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                            Resource Allocation Graph (RAG)
+                        </div>
+                        <button type="button" class="btn-refresh-graph" id="btn-refresh-graphs">Refresh</button>
+                    </div>
+                    <div class="cy-container" id="cy-rag">
+                        <div class="graph-empty" id="rag-empty">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <p>Add processes, resources, allocations or requests to visualize</p>
+                        </div>
+                    </div>
+                    <div class="graph-legend">
+                        <div class="legend-item"><div class="legend-dot process"></div> Process (Circle)</div>
+                        <div class="legend-item"><div class="legend-dot resource"></div> Resource (Square)</div>
+                        <div class="legend-item"><div class="legend-line solid"></div> Allocation (R&rarr;P)</div>
+                        <div class="legend-item"><div class="legend-line dashed"></div> Request (P&rarr;R)</div>
+                        <div class="legend-item"><div class="legend-dot cycle-node"></div> In Cycle</div>
+                    </div>
+                </div>
+
+                <!-- Right: WFG Panel -->
+                <div class="graph-panel" id="wfg-panel">
+                    <div class="graph-panel-header">
+                        <div class="graph-panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            Wait-For Graph (WFG)
+                        </div>
+                        <span class="cycle-badge hidden" id="cycle-badge">&#9888; Cycle detected</span>
+                    </div>
+                    <div class="cy-container" id="cy-wfg">
+                        <div class="graph-empty" id="wfg-empty">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <p>No wait-for dependencies currently active</p>
+                        </div>
+                    </div>
+                    <div class="graph-legend">
+                        <div class="legend-item"><div class="legend-dot process"></div> Process</div>
+                        <div class="legend-item"><div class="legend-line solid"></div> Waiting For</div>
+                        <div class="legend-item"><div class="legend-line cycle"></div> Cycle Edge</div>
+                        <div class="legend-item"><div class="legend-dot cycle-node"></div> Deadlocked</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </main>
 
     <!-- Toasts -->
     <div class="toast-container" id="toast-container"></div>
 
+    <script src="static/js/graph.js"></script>
     <script src="static/js/main.js"></script>
 </body>
 </html>
