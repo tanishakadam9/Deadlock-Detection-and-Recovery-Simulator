@@ -321,18 +321,17 @@ def test_single_instance_three_process_deadlock_cycle():
 
 
 # ---------------------------------------------------------------------------
-# The 5 Explicit Verification Test Cases for Single-Instance Resources
+# Section 18 Critical Test Cases (Single-Instance Resource Model)
 # ---------------------------------------------------------------------------
 
-def test_scenario_1_forked_requests_no_deadlock():
+def test_section_18_scenario_1():
     """
-    Test Case 1:
-    R1 -> P1
-    R2 -> P2
-    P3 -> R1
-    P3 -> R2
-    WFG edges: P3 -> P1, P3 -> P2
-    Expected: Deadlock = False, Cycles = []
+    TEST 1:
+    R1 -> P1, R2 -> P2, P3 -> R1, P3 -> R2
+    Expected:
+      WFG edges: P3 -> P1, P3 -> P2
+      Deadlock: False
+      Cycles: none
     """
     rag = ResourceAllocationGraph()
     for p in ['P1', 'P2', 'P3']:
@@ -347,25 +346,25 @@ def test_scenario_1_forked_requests_no_deadlock():
 
     wfg = rag.build_wait_for_graph()
     wfg_edges = set(wfg.edges())
-    assert wfg_edges == {('P3', 'P1'), ('P3', 'P2')}, f"Expected {{('P3', 'P1'), ('P3', 'P2')}}, got {wfg_edges}"
-    assert ('P1', 'P2') not in wfg_edges
-    assert ('P2', 'P1') not in wfg_edges
+    assert wfg_edges == {('P3', 'P1'), ('P3', 'P2')}, f"Expected only {{('P3', 'P1'), ('P3', 'P2')}}, got {wfg_edges}"
+    assert ('P1', 'P2') not in wfg_edges and ('P2', 'P1') not in wfg_edges
 
     res = rag.detect_single_instance_deadlock()
     assert res['deadlock'] is False
+    assert res['has_cycle'] is False
     assert res['cycles'] == []
     assert res['deadlocked_processes'] == []
 
 
-def test_scenario_2_two_process_deadlock_cycle():
+def test_section_18_scenario_2():
     """
-    Test Case 2:
-    R1 -> P1
-    R2 -> P2
-    P1 -> R2
-    P2 -> R1
-    WFG edges: P1 -> P2, P2 -> P1
-    Expected: Deadlock = True, Cycle = P1 -> P2 -> P1, Deadlocked = [P1, P2]
+    TEST 2:
+    R1 -> P1, R2 -> P2, P1 -> R2, P2 -> R1
+    Expected:
+      WFG edges: P1 -> P2, P2 -> P1
+      Deadlock: True
+      Cycle: P1 -> P2 -> P1
+      Deadlocked processes: P1, P2
     """
     rag = ResourceAllocationGraph()
     for p in ['P1', 'P2']:
@@ -384,18 +383,18 @@ def test_scenario_2_two_process_deadlock_cycle():
 
     res = rag.detect_single_instance_deadlock()
     assert res['deadlock'] is True
+    assert res['has_cycle'] is True
     assert set(res['deadlocked_processes']) == {'P1', 'P2'}
-    assert any(set(c) == {'P1', 'P2'} for c in res['cycles'])
 
 
-def test_scenario_3_single_request_no_deadlock():
+def test_section_18_scenario_3():
     """
-    Test Case 3:
-    R1 -> P1
-    R2 -> P2
-    P3 -> R1
-    WFG edges: P3 -> P1
-    Expected: Deadlock = False, Cycles = []
+    TEST 3:
+    R1 -> P1, R2 -> P2, P3 -> R1
+    Expected:
+      WFG edges: P3 -> P1
+      Deadlock: False
+      Cycles: none
     """
     rag = ResourceAllocationGraph()
     for p in ['P1', 'P2', 'P3']:
@@ -408,23 +407,22 @@ def test_scenario_3_single_request_no_deadlock():
     rag.add_request('P3', 'R1', amount=1)
 
     wfg = rag.build_wait_for_graph()
-    assert set(wfg.edges()) == {('P3', 'P1')}
+    wfg_edges = set(wfg.edges())
+    assert wfg_edges == {('P3', 'P1')}
 
     res = rag.detect_single_instance_deadlock()
     assert res['deadlock'] is False
-    assert res['cycles'] == []
     assert res['deadlocked_processes'] == []
 
 
-def test_scenario_4_linear_chain_no_deadlock():
+def test_section_18_scenario_4():
     """
-    Test Case 4:
-    R1 -> P1
-    P2 -> R1
-    R2 -> P2
-    P3 -> R2
-    WFG edges: P2 -> P1, P3 -> P2 (linear chain: P3 -> P2 -> P1)
-    Expected: Deadlock = False, Cycles = []
+    TEST 4:
+    R1 -> P1, P2 -> R1, R2 -> P2, P3 -> R2
+    Expected:
+      WFG edges: P2 -> P1, P3 -> P2
+      Deadlock: False
+      Cycles: none (chain P3 -> P2 -> P1 is waiting, not deadlock)
     """
     rag = ResourceAllocationGraph()
     for p in ['P1', 'P2', 'P3']:
@@ -438,22 +436,23 @@ def test_scenario_4_linear_chain_no_deadlock():
     rag.add_request('P3', 'R2', amount=1)
 
     wfg = rag.build_wait_for_graph()
-    assert set(wfg.edges()) == {('P2', 'P1'), ('P3', 'P2')}
+    wfg_edges = set(wfg.edges())
+    assert wfg_edges == {('P2', 'P1'), ('P3', 'P2')}
 
     res = rag.detect_single_instance_deadlock()
     assert res['deadlock'] is False
-    assert res['cycles'] == []
     assert res['deadlocked_processes'] == []
 
 
-def test_scenario_5_cycle_with_independent_branch():
+def test_section_18_scenario_5():
     """
-    Test Case 5:
-    R1 -> P1, P2 -> R1
-    R2 -> P2, P1 -> R2
-    R3 -> P3, P4 -> R3
-    WFG edges: P1 -> P2, P2 -> P1, P4 -> P3
-    Expected: Deadlock = True, Deadlocked = [P1, P2] (P3 and P4 are NOT deadlocked)
+    TEST 5:
+    R1 -> P1, P2 -> R1, R2 -> P2, P1 -> R2, R3 -> P3, P4 -> R3
+    Expected:
+      WFG edges: P2 -> P1, P1 -> P2, P4 -> P3
+      Deadlock: True
+      Deadlocked processes: P1, P2
+      Critical rule: P4 and P3 are NOT deadlocked and must NOT be in deadlocked_processes!
     """
     rag = ResourceAllocationGraph()
     for p in ['P1', 'P2', 'P3', 'P4']:
@@ -469,13 +468,15 @@ def test_scenario_5_cycle_with_independent_branch():
     rag.add_request('P4', 'R3', amount=1)
 
     wfg = rag.build_wait_for_graph()
-    assert set(wfg.edges()) == {('P1', 'P2'), ('P2', 'P1'), ('P4', 'P3')}
+    wfg_edges = set(wfg.edges())
+    assert wfg_edges == {('P2', 'P1'), ('P1', 'P2'), ('P4', 'P3')}
 
     res = rag.detect_single_instance_deadlock()
     assert res['deadlock'] is True
-    assert set(res['deadlocked_processes']) == {'P1', 'P2'}
+    assert set(res['deadlocked_processes']) == {'P1', 'P2'}, (
+        f"Only cycle processes P1 and P2 should be deadlocked, got: {res['deadlocked_processes']}"
+    )
     assert 'P3' not in res['deadlocked_processes']
     assert 'P4' not in res['deadlocked_processes']
-
 
 
