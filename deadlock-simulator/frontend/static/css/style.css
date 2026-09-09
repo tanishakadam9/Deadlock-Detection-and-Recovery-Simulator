@@ -509,49 +509,7 @@ tr:hover td {
   50%       { transform: translateY(4px); }
 }
 
-/* ============================================================
-   Graph Page  (graph.html)
-   ============================================================ */
-.graph-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: var(--bg-color);
-  color: var(--text-main);
-}
 
-/* breadcrumb / back bar */
-.graph-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 2rem;
-  background: rgba(12, 15, 28, 0.6);
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.graph-breadcrumb a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.graph-breadcrumb a:hover { color: var(--secondary); }
-
-.graph-breadcrumb .sep {
-  opacity: 0.4;
-}
-
-.graph-breadcrumb .current {
-  color: var(--text-main);
-  font-weight: 600;
-}
 
 /* main content area */
 .graph-content {
@@ -627,11 +585,37 @@ tr:hover td {
   50%       { box-shadow: 0 0 0 8px rgba(255,51,102,0); }
 }
 
-.cycle-badge.hidden { display: none; }
+.graph-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-refresh-graph {
+  background: rgba(0, 136, 255, 0.15);
+  border: 1px solid rgba(0, 136, 255, 0.35);
+  color: var(--secondary);
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-refresh-graph:hover {
+  background: rgba(0, 136, 255, 0.3);
+  color: #ffffff;
+  border-color: var(--primary);
+}
 
 /* Cytoscape container */
 .cy-container {
   flex: 1;
+  min-height: 440px;
   position: relative;
   background: rgba(7, 8, 15, 0.5);
 }
@@ -697,4 +681,93 @@ tr:hover td {
   .graph-breadcrumb { padding: 0.75rem 1rem; }
   .graph-content    { padding: 1rem; }
 }
+
+/* ============================================================
+   Detect Deadlock Panel Styles
+   ============================================================ */
+.deadlock-panel {
+  margin-bottom: 1.75rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.deadlock-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.deadlock-status-badge.deadlock-detected {
+  background: rgba(255, 51, 102, 0.15);
+  border: 1px solid rgba(255, 51, 102, 0.4);
+  color: #ff3366;
+}
+
+.deadlock-status-badge.no-deadlock {
+  background: rgba(0, 230, 118, 0.12);
+  border: 1px solid rgba(0, 230, 118, 0.35);
+  color: #00e676;
+}
+
+.deadlock-section-group {
+  margin-bottom: 1.15rem;
+}
+
+.deadlock-section-group:last-child {
+  margin-bottom: 0;
+}
+
+.deadlock-section-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  color: var(--text-secondary);
+  margin-bottom: 0.45rem;
+}
+
+.deadlock-section-content {
+  background: rgba(7, 8, 15, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.deadlock-cycle-text {
+  font-family: 'Inter', monospace, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ff8fa3;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.deadlock-cycle-text:last-child {
+  margin-bottom: 0;
+}
+
+.deadlock-wait-sentence {
+  color: var(--text-main);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.deadlock-wait-sentence:last-child {
+  margin-bottom: 0;
+}
+
+.deadlock-processes-list {
+  font-weight: 600;
+  color: #e8eaf0;
+  font-size: 1rem;
+}
+
 

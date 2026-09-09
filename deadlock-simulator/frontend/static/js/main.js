@@ -60,12 +60,18 @@ function renderAll() {
     populateRequestDropdowns();
     
     updateStats();
+    if (typeof loadGraphs === 'function') {
+        loadGraphs();
+    }
+    if (typeof detectDeadlock === 'function') {
+        detectDeadlock();
+    }
 }
 
 // Process Management
 async function handleAddProcess(e) {
     e.preventDefault();
-    const name = document.getElementById('process-name').value;
+    const name = document.getElementById('process-name').value.trim();
     const priority = document.getElementById('process-priority').value;
 
     try {
@@ -74,13 +80,14 @@ async function handleAddProcess(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, priority })
         });
-        if (!res.ok) throw new Error('Failed to add process');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to add process');
         
         e.target.reset();
         showToast('Process added successfully');
         fetchAll();
     } catch (error) {
-        showToast('Error adding process', 'error');
+        showToast(error.message || 'Error adding process', 'error');
     }
 }
 
@@ -123,7 +130,7 @@ function renderProcesses() {
 // Resource Management
 async function handleAddResource(e) {
     e.preventDefault();
-    const name = document.getElementById('resource-name').value;
+    const name = document.getElementById('resource-name').value.trim();
     const instances = parseInt(document.getElementById('resource-instances').value);
 
     try {
@@ -132,13 +139,14 @@ async function handleAddResource(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, instances })
         });
-        if (!res.ok) throw new Error('Failed to add resource');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to add resource');
         
         e.target.reset();
         showToast('Resource added successfully');
         fetchAll();
     } catch (error) {
-        showToast('Error adding resource', 'error');
+        showToast(error.message || 'Error adding resource', 'error');
     }
 }
 
@@ -181,9 +189,16 @@ function renderResources() {
 // Allocation Management
 async function handleAddAllocation(e) {
     e.preventDefault();
-    const process_id = parseInt(document.getElementById('alloc-process').value);
-    const resource_id = parseInt(document.getElementById('alloc-resource').value);
-    const amount = parseInt(document.getElementById('alloc-amount').value);
+    const processSelect = document.getElementById('alloc-process');
+    const resourceSelect = document.getElementById('alloc-resource');
+    const process_id = parseInt(processSelect.value);
+    const resource_id = parseInt(resourceSelect.value);
+    const amount = parseInt(document.getElementById('alloc-amount').value) || 1;
+
+    if (isNaN(process_id) || isNaN(resource_id)) {
+        showToast('Please create and select a process and resource first', 'error');
+        return;
+    }
 
     try {
         const res = await fetch(`${API_BASE}/allocations`, {
@@ -191,13 +206,14 @@ async function handleAddAllocation(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ process_id, resource_id, amount })
         });
-        if (!res.ok) throw new Error('Failed to add allocation');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to add allocation');
         
-        e.target.reset();
+        document.getElementById('alloc-amount').value = '1';
         showToast('Allocation added successfully');
         fetchAll();
     } catch (error) {
-        showToast('Error adding allocation', 'error');
+        showToast(error.message || 'Error adding allocation', 'error');
     }
 }
 
@@ -244,17 +260,39 @@ function renderAllocations() {
 function populateAllocationDropdowns() {
     const pSelect = document.getElementById('alloc-process');
     const rSelect = document.getElementById('alloc-resource');
+    if (!pSelect || !rSelect) return;
+
+    const prevP = pSelect.value;
+    const prevR = rSelect.value;
     
-    pSelect.innerHTML = processes.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    rSelect.innerHTML = resources.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+    if (processes.length === 0) {
+        pSelect.innerHTML = '<option value="" disabled selected>No processes available</option>';
+    } else {
+        pSelect.innerHTML = processes.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        if (prevP && processes.some(p => p.id == prevP)) pSelect.value = prevP;
+    }
+
+    if (resources.length === 0) {
+        rSelect.innerHTML = '<option value="" disabled selected>No resources available</option>';
+    } else {
+        rSelect.innerHTML = resources.map(r => `<option value="${r.id}">${r.name} (${r.instances} inst)</option>`).join('');
+        if (prevR && resources.some(r => r.id == prevR)) rSelect.value = prevR;
+    }
 }
 
 // Request Management
 async function handleAddRequest(e) {
     e.preventDefault();
-    const process_id = parseInt(document.getElementById('req-process').value);
-    const resource_id = parseInt(document.getElementById('req-resource').value);
-    const amount = parseInt(document.getElementById('req-amount').value);
+    const processSelect = document.getElementById('req-process');
+    const resourceSelect = document.getElementById('req-resource');
+    const process_id = parseInt(processSelect.value);
+    const resource_id = parseInt(resourceSelect.value);
+    const amount = parseInt(document.getElementById('req-amount').value) || 1;
+
+    if (isNaN(process_id) || isNaN(resource_id)) {
+        showToast('Please create and select a process and resource first', 'error');
+        return;
+    }
 
     try {
         const res = await fetch(`${API_BASE}/requests`, {
@@ -262,13 +300,14 @@ async function handleAddRequest(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ process_id, resource_id, amount })
         });
-        if (!res.ok) throw new Error('Failed to add request');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to add request');
         
-        e.target.reset();
+        document.getElementById('req-amount').value = '1';
         showToast('Request added successfully');
         fetchAll();
     } catch (error) {
-        showToast('Error adding request', 'error');
+        showToast(error.message || 'Error adding request', 'error');
     }
 }
 
@@ -315,9 +354,24 @@ function renderRequests() {
 function populateRequestDropdowns() {
     const pSelect = document.getElementById('req-process');
     const rSelect = document.getElementById('req-resource');
+    if (!pSelect || !rSelect) return;
+
+    const prevP = pSelect.value;
+    const prevR = rSelect.value;
     
-    pSelect.innerHTML = processes.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    rSelect.innerHTML = resources.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+    if (processes.length === 0) {
+        pSelect.innerHTML = '<option value="" disabled selected>No processes available</option>';
+    } else {
+        pSelect.innerHTML = processes.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        if (prevP && processes.some(p => p.id == prevP)) pSelect.value = prevP;
+    }
+
+    if (resources.length === 0) {
+        rSelect.innerHTML = '<option value="" disabled selected>No resources available</option>';
+    } else {
+        rSelect.innerHTML = resources.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+        if (prevR && resources.some(r => r.id == prevR)) rSelect.value = prevR;
+    }
 }
 
 // Stats Update
@@ -336,3 +390,4 @@ function switchTab(tabName) {
     document.getElementById(`tab-btn-${tabName}`).classList.add('active');
     document.getElementById(`panel-${tabName}`).classList.add('active');
 }
+
